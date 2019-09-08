@@ -9,14 +9,14 @@ function getRepositories() {
 function showRepositories() {
   var repos = JSON.parse(this.responseText);
   const repoList = `<ul>${repos
-    .map(r => '<li>' + r.repository + ' - <a href="#" data-repo="' + r.repository + '" onclick="getCommits(this)">Get Commits</a></li>')
+    .map(r => '<li>' + r.name + ' - <a href="#" data-repository="' + r.name + '" onclick="getCommits(this)">Get Commits</a></li>')
     .join('')}</ul>`;
   document.getElementById('repositories').innerHTML = repoList;
 }
 
 function getCommits(el) {
   const username = document.getElementById("username").value;
-  const name = el.dataset.repo;
+  const name = el.dataset.repository;
   const req = new XMLHttpRequest();
   req.addEventListener('load', displayCommits);
   req.open('GET', `https://api.github.com/repos/${username}/${name}/commits`);
