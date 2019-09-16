@@ -25,8 +25,10 @@
   <body>
     <main id="main">
       <form onsubmit="getRepositories();return false;">
+         <h3>Look Up User</h3>
+        <label for="username">Username</label>
         <input type="text" id="username"><br>
-        <input type="submit">
+        <a href='#', onclick='getRepositories()'><input type="submit"></a>
       </form>
     </main>
     <div class="flexbox-container">
