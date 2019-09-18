@@ -23,7 +23,11 @@ function displayRepositories() {
   var repoList = `<ul>${repos
     .map(
       r =>
-        '<li>' + `<a href="${r.html_url}" >` + r.name + '</a>' + ' - <a href="#"' + ' data-username="' + r.owner.login + '" data-repo="' + r.name + '" onclick="getCommits(this)">Get Commits</a></li>'
+        '<li>' + `<a href="${r.html_url}" >` + r.name + '</a>' + ' - <a href="#"' + ' data-username="' + r.owner.login + '" data-repo="' + r.name + '" onclick="getCommits(this)">Get Commits</a>' + ' - ' +
+
+        '<a href="#"' + ' data-username="' + r.owner.login + '" data-repo="' + r.name + '" onclick="getBranches(this)">Get Branches</a>'
+
+        + '</li>'
     )
     .join('')}</ul>`;
   document.getElementById('repositories').innerHTML = repoList;
@@ -31,6 +35,7 @@ function displayRepositories() {
 
 function getCommits(el) {
   var username = el.dataset.username;
+  // Using the API with my own username returns my repositories in el.dataset.repo rather than el.dataset.repository
   var repository = el.dataset.repository;
   var req = new XMLHttpRequest();
   req.addEventListener('load', displayCommits);
@@ -41,19 +46,39 @@ function getCommits(el) {
 function displayCommits() {
   var commits = JSON.parse(this.responseText);
 
-  var ulElement = function(commit) {
+  var commitElement = function(commit) {
     if (commit.author) {
       return `<li><strong>${commit.commit.author.name} (${commit.author.login})</strong> - ${commit.commit.message}</li>`
     }
   }
 
   var commitsList  = '<ul>' + commits.map(function(commit) {
-    return ulElement(commit)
+    return commitElement(commit)
   }).join('') + '</ul>'
 
   document.getElementById('details').innerHTML = commitsList;
 }
 
 // function getBranches()
+function getBranches(el) {
+  var username = el.dataset.username;
+  var repository = el.dataset.repository;
+  var req = new XMLHttpRequest();
+  req.addEventListener('load', displayBranches);
+  req.open('GET', `https://api.github.com/repos/${username}/${repository}/branches`);
+  req.send();
+}
 
 // function displayBranches()
+function displayBranches() {
+  var branches = JSON.parse(this.responseText);
+  var branchElement = function(branch) {
+    if (branch) {
+      return `<li>[${branch.name}]</li>`
+    }
+  }
+
+  var branchesList = '<ul>' + branches.map(branch => branchElement(branch)).join('') + '</ul>'
+
+  document.getElementById('details').innerHTML = branchesList;
+}
